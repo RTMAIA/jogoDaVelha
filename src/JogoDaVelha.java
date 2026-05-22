@@ -178,53 +178,37 @@ public class JogoDaVelha {
         return new int[0];
     }
 
-    //Bloco ofensivo basico
-    public int verificaMalha() {
-        int cont = 0;
-
-        for (int i = 0; i <= tabuleiro.length - 1; i++) {
-            for (int j = 0; j <= tabuleiro.length - 1; j++) {
-                if (tabuleiro[i][j].equals(" ")) {
-                    cont += 1;
-                }
-                if (cont == 9) {
-                    return 0;
-                }
-            }
-        }
-        return 1;
-    }
-
+    // Bloco de açao geral
     public int[] marcacaoInicial() {
-        int[] posicoes = new int[2];
+    int[] posicoes = new int[2];
 
-        if (tabuleiro[1][1].equals(" ")) {
-            posicoes[0] = 2;
-            posicoes[1] = 2;
-            return posicoes;
-        }
-        if (tabuleiro[0][0].equals(" ")) {
-            posicoes[0] = 1;
-            posicoes[1] = 1;
-            return posicoes;
-        }
-        if (tabuleiro[0][2].equals(" ")) {
-            posicoes[0] = 1;
-            posicoes[1] = 3;
-            return posicoes;
-        }
-        if (tabuleiro[2][0].equals(" ")) {
-            posicoes[0] = 3;
-            posicoes[1] = 1;
-            return posicoes;
-        }
-        if (tabuleiro[2][2].equals(" ")) {
-            posicoes[0] = 3;
-            posicoes[1] = 3;
-            return posicoes;
-        }
-        return new int[0];
+    if (tabuleiro[1][1].equals(" ")) {
+        posicoes[0] = 2;
+        posicoes[1] = 2;
+        return posicoes;
     }
+    if (tabuleiro[0][0].equals(" ")) {
+        posicoes[0] = 1;
+        posicoes[1] = 1;
+        return posicoes;
+    }
+    if (tabuleiro[0][2].equals(" ")) {
+        posicoes[0] = 1;
+        posicoes[1] = 3;
+        return posicoes;
+    }
+    if (tabuleiro[2][0].equals(" ")) {
+        posicoes[0] = 3;
+        posicoes[1] = 1;
+        return posicoes;
+    }
+    if (tabuleiro[2][2].equals(" ")) {
+        posicoes[0] = 3;
+        posicoes[1] = 3;
+        return posicoes;
+    }
+    return new int[0];
+}
 
     public int[] posicoesFinais() {
         int[] posicoes = new int[2];
@@ -252,13 +236,106 @@ public class JogoDaVelha {
         return new int[0];
     }
 
+    public int[] lacunaLinha(String simb) {
+        // o bloco esta retornado numero aleatorio padronizar para saida [0, 0]
+        int cont = 0;
+        int[] posicoes = new int[2];
+
+        for (int i = 0; i <= tabuleiro.length - 1; i++) {
+            cont = 0;
+            for (int j = 0; j <= tabuleiro.length - 1; j++) {
+                if (tabuleiro[i][j].equals(simb)) {
+                    cont += 1;
+                } else {
+                    if (tabuleiro[i][j] != " ") {
+                        cont -= 1;
+                    } else {
+                        posicoes[0] = i + 1;
+                        posicoes[1] = j + 1;
+                    }
+                }
+            }
+            if (cont == 2 && posicoes[0] != 0) {
+                return posicoes;
+            }
+        }
+        return new int[0];
+    }
+
+    public int[] lacunaColuna(String simb) {
+        // o bloco esta retornado numero aleatorio padronizar para saida [0, 0]
+        int cont = 0;
+        int[] posicoes = new int[2];
+
+        for (int i = 0; i <= tabuleiro.length - 1; i++) {
+            cont = 0;
+            for (int j = 0; j <= tabuleiro.length - 1; j++) {
+                if (tabuleiro[j][i].equals(simb)) {
+                    cont += 1;
+                } else {
+                    if (tabuleiro[j][i] != " ") {
+                        cont -= 1;
+                    } else {
+                        posicoes[0] = j + 1;
+                        posicoes[1] = i + 1;
+                    }
+                }
+            }
+            if (cont == 2 && posicoes[0] != 0) {
+                return posicoes;
+            }
+        }
+        return new int[0];
+    }
+
+    public int[] lacunaDiagonalPrincipal(String simb) {
+        int[] posicoes = new int[2];
+        int cont = 0;
+
+        for (int i = 0; i <= tabuleiro.length - 1; i++){
+            if (tabuleiro[i][i].equals(simb) && tabuleiro[i][i] != " ") {
+                cont += 1;
+            }
+            if (tabuleiro[i][i].equals(" ")) {
+                posicoes[0] = i + 1;
+                posicoes[1] = i + 1;
+            }
+            if (cont == 2 && posicoes[0] != 0) {
+                return posicoes;
+            }
+        }
+        return  new int[0];
+    }
+
+    public int[] lacunaDiagonalSecundaria(String simb) {
+        int[] posicoes = new int[2];
+        int cont = 0;
+
+        for (int i = 0; i <= tabuleiro.length - 1; i++) {
+            if (tabuleiro[i][tabuleiro.length - 1 - i].equals(simb) && tabuleiro[i][tabuleiro.length - 1 - i] != " ") {
+                cont += 1;
+            }
+            if (tabuleiro[i][tabuleiro.length - 1 - i].equals(" ")) {
+                posicoes[0] = i + 1;
+                posicoes[1] = tabuleiro.length - i;
+            }
+            if (cont == 2 && posicoes[0] != 0) {
+                return posicoes;
+            }
+        }
+        return new int[0];
+    }
+
+    //Bloco ofensivo basico
     public int[] ataque(String simb) {
-        int[] lacunaLin, lacunaCol, lacunaDiagonalP, lacunaDiagonalS = new int[2];
+        int[] lacunaLin, lacunaCol, lacunaDiagonalP, lacunaDiagonalS, ataqueGarfoDiagonalP, ataqueGarfoDiagonalS = new int[2];
 
         lacunaLin = lacunaLinha(simb);
         lacunaCol = lacunaColuna(simb);
         lacunaDiagonalP = lacunaDiagonalPrincipal(simb);
         lacunaDiagonalS = lacunaDiagonalSecundaria(simb);
+        ataqueGarfoDiagonalP = ataqueGarfoDiagonalPrincipal(simb);
+        ataqueGarfoDiagonalS = ataqueGarfoDiagonalSecundaria(simb);
 
         if (lacunaLin.length != 0) {
             return lacunaLin;
@@ -272,11 +349,94 @@ public class JogoDaVelha {
         if (lacunaDiagonalS.length != 0 ) {
             return lacunaDiagonalS;
         }
+        if (ataqueGarfoDiagonalP.length != 0) {
+            return ataqueGarfoDiagonalP;
+        }
+        if (ataqueGarfoDiagonalS.length != 0) {
+            return ataqueGarfoDiagonalS;
+        }
         return new int[0];
     }
 
+    public int[] ataqueGarfoDiagonalPrincipal(String simb) {
+        int[] posicoes = new int[2];
+        String simboloAdversario = retornaSimboloAdversario(simb);
+        int tabuleiroVazio = verificaTabuleiro();
+
+        if (tabuleiroVazio == 0) {
+            posicoes[0] = 1;
+            posicoes[1] = 1;
+            return posicoes;
+        }
+        if (tabuleiroVazio == 7 && tabuleiro[0][0].equals(simb) && tabuleiro[1][1].equals(simboloAdversario)) {
+            posicoes[0] = 3;
+            posicoes[1] = 3;
+            if (tabuleiro[posicoes[0] - 1][posicoes[1] - 1].equals(" ")) {
+                return posicoes;
+            }
+        }
+        if (tabuleiro[0][0].equals(simboloAdversario) && tabuleiro[1][1].equals(simb) && tabuleiro[2][2].equals(simboloAdversario)) {
+            if (tabuleiro[0][2].equals(simboloAdversario)) {
+                posicoes[0] = 3;
+                posicoes[1] = 1;
+                if (tabuleiro[posicoes[0] - 1][posicoes[1] - 1].equals(" ")) {
+                    return posicoes;
+                }
+        } else {
+            if (tabuleiro[2][1].equals(simboloAdversario)) {
+                posicoes[0] = 1;
+                posicoes[1] = 3;
+                if (tabuleiro[posicoes[0] - 1][posicoes[1] - 1].equals(" ")) {
+                    return posicoes;
+                    }
+                }
+            }
+        }
+    return new int[0];
+    }
+
+    public int[] ataqueGarfoDiagonalSecundaria(String simb) {
+        int[] posicoes = new int[2];
+        String simboloAdversario = retornaSimboloAdversario(simb);
+        int tabuleiroVazio = verificaTabuleiro();
+
+        if (tabuleiroVazio == 0) {
+            posicoes[0] = 1;
+            posicoes[1] = 1;
+            return posicoes;
+        }
+
+        if (tabuleiroVazio == 7 && tabuleiro[0][2].equals(simb) && tabuleiro[1][1].equals(simboloAdversario)) {
+            posicoes[0] = 3;
+            posicoes[1] = 1;
+            if (tabuleiro[posicoes[0] - 1][posicoes[1] - 1].equals(" ")) {
+                return posicoes;
+            }
+        }
+
+        if (tabuleiro[0][2].equals(simboloAdversario) && tabuleiro[1][1].equals(simb) && tabuleiro[2][0].equals(simboloAdversario)) {
+            if (tabuleiro[2][2].equals(simboloAdversario)) {
+                posicoes[0] = 1;
+                posicoes[1] = 1;
+                if (tabuleiro[posicoes[0] - 1][posicoes[1] - 1].equals(" ")) {
+                    return posicoes;
+                }
+            } else {
+                if (tabuleiro[0][0].equals(simboloAdversario)) {
+                    posicoes[0] = 2;
+                    posicoes[1] = 2;
+                    if (tabuleiro[posicoes[0] - 1][posicoes[1] - 1].equals(" ")) {
+                        return posicoes;
+                    }
+                    }
+                }
+            }
+        return new int[0];
+    }
+
+    // Bloco de defesa basica
     public int[] defesa(String simb) {
-        int[] lacunaLin, lacunaCol, lacunaDiagonalP, lacunaDiagonalS, marcacaoInicial,lacunaGarfoDiagonaloP, lacunaGarfoDiagonaloS, posicaoFinal = new int[2];
+        int[] lacunaLin, lacunaCol, lacunaDiagonalP, lacunaDiagonalS, marcacaoInicial,lacunaGarfoDiagonaloP, lacunaGarfoDiagonaloS, lacunaGarfoLinCol, posicaoFinal = new int[2];
         String simbAdversario = retornaSimboloAdversario(simb);
 
         lacunaLin = lacunaLinha(simbAdversario);
@@ -285,6 +445,7 @@ public class JogoDaVelha {
         lacunaDiagonalS = lacunaDiagonalSecundaria(simbAdversario);
         lacunaGarfoDiagonaloP = lacunaGarfoDiagonaloPrincipal(simb);
         lacunaGarfoDiagonaloS = lacunaGarfoDiagonaloSecundaria(simb);
+        lacunaGarfoLinCol = lacunaGarfoLinhaColuna(simb);
         marcacaoInicial = marcacaoInicial();
         posicaoFinal = posicoesFinais();
 
@@ -306,10 +467,31 @@ public class JogoDaVelha {
         if (lacunaGarfoDiagonaloS.length != 0) {
             return lacunaGarfoDiagonaloS;
         }
+        if (lacunaGarfoLinCol.length != 0) {
+            return lacunaGarfoLinCol;
+        }
         if (marcacaoInicial.length != 0) {
             return marcacaoInicial;
         }
         return posicaoFinal;
+    }
+
+    public int[] lacunaGarfoLinhaColuna(String simb) {
+        int[] posicoes = new int[2];
+        String simboloAdversario = retornaSimboloAdversario(simb);
+
+        for (int i = 0; i <= tabuleiro.length - 1; i++) {
+            if (i % 2 == 0) {
+                if (tabuleiro[0][i].equals(simboloAdversario) && tabuleiro[1][1].equals(simb) && tabuleiro[2][1].equals(simboloAdversario)) {
+                    posicoes[0] = 2;
+                    posicoes[1] = 1;
+                    if (tabuleiro[posicoes[0] - 1][posicoes[1] - 1].equals(" ")) {
+                        return posicoes;
+                    }
+                }
+            }
+        }
+        return new int[0];
     }
 
     public int[] lacunaGarfoDiagonaloPrincipal(String simb) {
@@ -360,95 +542,29 @@ public class JogoDaVelha {
         return new int[0];
     }
 
-    // Bloco de defesa basica
-    public int[] lacunaDiagonalPrincipal(String simb) {
-        int[] posicoes = new int[2];
-        int cont = 0;
-
-        for (int i = 0; i <= tabuleiro.length - 1; i++){
-            if (tabuleiro[i][i].equals(simb) && tabuleiro[i][i] != " ") {
-                cont += 1;
-            }
-            if (tabuleiro[i][i].equals(" ")) {
-                posicoes[0] = i + 1;
-                posicoes[1] = i + 1;
-            }
-            if (cont == 2 && posicoes[0] != 0) {
-                return posicoes;
-            }
+//Bloco de utilirios
+    public String retornaSimboloAdversario(String simb) {
+        if (simb.equals("x")) {
+            return "o";
+        }else {
+            return "x";
         }
-        return  new int[0];
     }
 
-    public int[] lacunaDiagonalSecundaria(String simb) {
-        int[] posicoes = new int[2];
+    public int verificaTabuleiro() {
         int cont = 0;
 
         for (int i = 0; i <= tabuleiro.length - 1; i++) {
-            if (tabuleiro[i][tabuleiro.length - 1 - i].equals(simb) && tabuleiro[i][tabuleiro.length - 1 - i] != " ") {
-                cont += 1;
-            }
-            if (tabuleiro[i][tabuleiro.length - 1 - i].equals(" ")) {
-                posicoes[0] = i + 1;
-                posicoes[1] = tabuleiro.length - i;
-            }
-            if (cont == 2 && posicoes[0] != 0) {
-                return posicoes;
-            }
-        }
-        return new int[0];
-    }
-
-    public int[] lacunaLinha(String simb) {
-        // o bloco esta retornado numero aleatorio padronizar para saida [0, 0]
-        int cont = 0;
-        int[] posicoes = new int[2];
-
-        for (int i = 0; i <= tabuleiro.length - 1; i++) {
-            cont = 0;
             for (int j = 0; j <= tabuleiro.length - 1; j++) {
-                if (tabuleiro[i][j].equals(simb)) {
+                if (tabuleiro[i][j].equals(" ")) {
                     cont += 1;
-                } else {
-                    if (tabuleiro[i][j] != " ") {
-                        cont -= 1;
-                    } else {
-                            posicoes[0] = i + 1;
-                            posicoes[1] = j + 1;
-                        }
-                    }
                 }
-                if (cont == 2 && posicoes[0] != 0) {
-                    return posicoes;
-            }
-        }
-        return new int[0];
-    }
-
-    public int[] lacunaColuna(String simb) {
-        // o bloco esta retornado numero aleatorio padronizar para saida [0, 0]
-        int cont = 0;
-        int[] posicoes = new int[2];
-
-        for (int i = 0; i <= tabuleiro.length - 1; i++) {
-            cont = 0;
-            for (int j = 0; j <= tabuleiro.length - 1; j++) {
-                if (tabuleiro[j][i].equals(simb)) {
-                    cont += 1;
-                } else {
-                    if (tabuleiro[j][i] != " ") {
-                        cont -= 1;
-                    } else {
-                        posicoes[0] = j + 1;
-                        posicoes[1] = i + 1;
-                    }
+                if (cont == 9) {
+                    return 0;
                 }
             }
-            if (cont == 2 && posicoes[0] != 0) {
-                return posicoes;
-            }
         }
-        return new int[0];
+        return 1;
     }
 
     public int[] jogadorOuComputador(String jogador, String simb) {
@@ -456,15 +572,6 @@ public class JogoDaVelha {
             return computador(simb);
         }else {
             return jogador();
-        }
-    }
-
-//Bloco de utilirios
-    public String retornaSimboloAdversario(String simb) {
-        if (simb.equals("x")) {
-            return "o";
-        }else {
-            return "x";
         }
     }
 
@@ -570,32 +677,51 @@ public class JogoDaVelha {
     public void jogo() {
         int escolha;
         Scanner teclado = new Scanner(System.in);
+        String continuar;
 
-        System.out.println("""
-                
-                ░▀▀█░█▀█░█▀▀░█▀█░░░█▀▄░█▀█░░░█░█░█▀▀░█░░░█░█░█▀█
-                ░░░█░█░█░█░█░█░█░░░█░█░█▀█░░░▀▄▀░█▀▀░█░░░█▀█░█▀█
-                ░▀▀░░▀▀▀░▀▀▀░▀▀▀░░░▀▀░░▀░▀░░░░▀░░▀▀▀░▀▀▀░▀░▀░▀░▀
-                
-                ------------------------------------------------------
-                |                                                    |
-                |  1 - Jogar PvP (Player vs Player)                  |
-                |  2 - Jogar PvC (Player vs Computador)              |
-                |  3 - Jogar CvC (Computador vs Computador)          |
-                |                                                    |
-                ------------------------------------------------------""");
+        while (true) {
+            System.out.println("""
+                    
+                    ░▀▀█░█▀█░█▀▀░█▀█░░░█▀▄░█▀█░░░█░█░█▀▀░█░░░█░█░█▀█
+                    ░░░█░█░█░█░█░█░█░░░█░█░█▀█░░░▀▄▀░█▀▀░█░░░█▀█░█▀█
+                    ░▀▀░░▀▀▀░▀▀▀░▀▀▀░░░▀▀░░▀░▀░░░░▀░░▀▀▀░▀▀▀░▀░▀░▀░▀
+                    
+                    ------------------------------------------------------
+                    |                                                    |
+                    |  1 - Jogar PvP (Player vs Player)                  |
+                    |  2 - Jogar PvC (Player vs Computador)              |
+                    |  3 - Jogar CvC (Computador vs Computador)          |
+                    |  4 - Sair                                          |
+                    |                                                    |
+                    ------------------------------------------------------""");
 
-        System.out.print("Escolha um modo de jogo: ");
-        escolha = teclado.nextInt();
-        switch (escolha) {
-            case 1: pvp("Jogador 1", "Jogador 2", false);
-            break;
-            case 2: pvc();
-            break;
-            case 3: cvc();
-            break;
+            System.out.print("Escolha um modo de jogo: ");
+            escolha = teclado.nextInt();
+            while (true) {
+                switch (escolha) {
+                    case 1:
+                        pvp("Jogador 1", "Jogador 2", false);
+                        break;
+                    case 2:
+                        pvc();
+                        break;
+                    case 3:
+                        cvc();
+                        break;
+                    case 4:
+                        break;
+                }
+                if (escolha == 4) {
+                    System.exit(0);
+                } else {
+                    tabuleiro = new String[][] {{" "," ", " "}, {" "," ", " "},{" "," ", " "}};
+                }
+                System.out.print("Deseja continuar? (S/N): ");
+                continuar = teclado.next();
+                    if (continuar.equalsIgnoreCase("n")) {
+                        break;
+                    }
+            }
         }
-
-
     }
 }
