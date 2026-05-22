@@ -363,11 +363,12 @@ public class JogoDaVelha {
         String simboloAdversario = retornaSimboloAdversario(simb);
         int tabuleiroVazio = verificaTabuleiro();
 
-        if (tabuleiroVazio == 0) {
+        if (tabuleiroVazio == 9) {
             posicoes[0] = 1;
             posicoes[1] = 1;
             return posicoes;
         }
+        System.out.println(tabuleiroVazio);
         if (tabuleiroVazio == 7 && tabuleiro[0][0].equals(simb) && tabuleiro[1][1].equals(simboloAdversario)) {
             posicoes[0] = 3;
             posicoes[1] = 3;
@@ -560,11 +561,11 @@ public class JogoDaVelha {
                     cont += 1;
                 }
                 if (cont == 9) {
-                    return 0;
+                    return cont;
                 }
             }
         }
-        return 1;
+        return cont;
     }
 
     public int[] jogadorOuComputador(String jogador, String simb) {
