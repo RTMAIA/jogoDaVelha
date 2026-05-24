@@ -1,6 +1,10 @@
-import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 
 public class JogoDaVelha {
     String[][] tabuleiro = {{" ", " ", " "}, {" ", " ", " "}, {" ", " ", " "}};
@@ -15,9 +19,9 @@ public class JogoDaVelha {
                 3   %s | %s | %s   
                 """, tabuleiro[0][0], tabuleiro[0][1], tabuleiro[0][2], tabuleiro[1][0], tabuleiro[1][1], tabuleiro[1][2], tabuleiro[2][0], tabuleiro[2][1], tabuleiro[2][2]));
     }
-
-//Bloco de verificacao de vitória
-    // Bloco de jogo
+// Bloco para PvP
+    // Bloco de verificacao de vitória
+        // Bloco de jogo
 
     public int verificarLinha(int x, String simb) {
         int cont = 0;
@@ -50,7 +54,7 @@ public class JogoDaVelha {
         return cont;
     }
 
-    public int verificarDiagonalSecundaria(int x, String simb) {
+    public int verificarDiagonalSecundaria(String simb) {
         int cont = 0;
         for (int i = 0; i <= tabuleiro.length - 1; i++) {
             if (tabuleiro[i][tabuleiro.length - 1 - i].equals(simb)) {
@@ -60,7 +64,7 @@ public class JogoDaVelha {
         return cont;
     }
 
-//Bloco de jogabilidade
+// Bloco de jogabilidade
 
     public int marcarPosicao(int x, int y, String simb) {
         if (tabuleiro[x - 1][y - 1].equals(" ")) {
@@ -70,38 +74,6 @@ public class JogoDaVelha {
             return 1;
         }
         return 0;
-    }
-
-    public String[] escolherSimbolo() {
-        String[] simbolos = {"x", "o"};
-        String[] simbJogadores = new String[2];
-        int nSimb;
-        Random random = new Random();
-
-        nSimb = random.nextInt(0, 2);
-        simbJogadores[0] = simbolos[nSimb];
-        if (simbJogadores[0].equals(simbolos[0])) {
-            simbJogadores[1] = simbolos[1];
-        }else {
-            simbJogadores[1] = simbolos[0];
-        }
-        return simbJogadores;
-    }
-
-    public String[] aleatorizarJogador(String pJogador, String sJogador) {
-        String[] jogadores = {pJogador, sJogador};
-        String[] jogadoresAleatorios = new String[2];
-        Random random = new Random();
-        int nJogador;
-
-        nJogador = random.nextInt(0, 2);
-        jogadoresAleatorios[0] = jogadores[nJogador];
-        if (jogadoresAleatorios[0].equals(jogadores[0])) {
-            jogadoresAleatorios[1] = jogadores[1];
-        }else {
-            jogadoresAleatorios[1] = jogadores[0];
-        }
-        return jogadoresAleatorios;
     }
 
     public int entrada(int x, int y, String simbolo) {
@@ -115,7 +87,7 @@ public class JogoDaVelha {
         int cont = 0;
         for (int i = 0; i <= tabuleiro.length - 1; i++) {
             for  (int j = 0; j <= tabuleiro.length - 1; j++) {
-                if (tabuleiro[i][j] != " ") {
+                if (!tabuleiro[i][j].equals(" ")) {
                     cont  += 1;
                     if (cont == 9) {
                         System.out.println("Empate!");
@@ -137,13 +109,13 @@ public class JogoDaVelha {
         if (verificarDiagonalPrincipal(simbolo) == 3) {
             return jogador + " venceu!";
         }
-        if (verificarDiagonalSecundaria(x, simbolo) == 3) {
+        if (verificarDiagonalSecundaria(simbolo) == 3) {
             return jogador + " venceu!";
         }
         return "";
     }
 
-//Bloco de jogadores
+// Bloco de jogadores
     public int[] jogador() {
         int x, y;
         int[] posicoes = {0, 0};
@@ -164,7 +136,6 @@ public class JogoDaVelha {
         return new  int[0];
     }
 
-//Bloco computador
     public int[] computador(String simb) {
         int[] defesa = defesa(simb);
         int[] ataque = ataque(simb);
@@ -178,6 +149,7 @@ public class JogoDaVelha {
         return new int[0];
     }
 
+// Bloco de funcionalidades do computador
     // Bloco de açao geral
     public int[] marcacaoInicial() {
     int[] posicoes = new int[2];
@@ -247,7 +219,7 @@ public class JogoDaVelha {
                 if (tabuleiro[i][j].equals(simb)) {
                     cont += 1;
                 } else {
-                    if (tabuleiro[i][j] != " ") {
+                    if (!tabuleiro[i][j].equals(" ")) {
                         cont -= 1;
                     } else {
                         posicoes[0] = i + 1;
@@ -273,7 +245,7 @@ public class JogoDaVelha {
                 if (tabuleiro[j][i].equals(simb)) {
                     cont += 1;
                 } else {
-                    if (tabuleiro[j][i] != " ") {
+                    if (!tabuleiro[j][i].equals(" ")) {
                         cont -= 1;
                     } else {
                         posicoes[0] = j + 1;
@@ -293,7 +265,7 @@ public class JogoDaVelha {
         int cont = 0;
 
         for (int i = 0; i <= tabuleiro.length - 1; i++){
-            if (tabuleiro[i][i].equals(simb) && tabuleiro[i][i] != " ") {
+            if (tabuleiro[i][i].equals(simb) && !tabuleiro[i][i].equals(" ")) {
                 cont += 1;
             }
             if (tabuleiro[i][i].equals(" ")) {
@@ -312,7 +284,7 @@ public class JogoDaVelha {
         int cont = 0;
 
         for (int i = 0; i <= tabuleiro.length - 1; i++) {
-            if (tabuleiro[i][tabuleiro.length - 1 - i].equals(simb) && tabuleiro[i][tabuleiro.length - 1 - i] != " ") {
+            if (tabuleiro[i][tabuleiro.length - 1 - i].equals(simb) && !tabuleiro[i][tabuleiro.length - 1 - i].equals(" ")) {
                 cont += 1;
             }
             if (tabuleiro[i][tabuleiro.length - 1 - i].equals(" ")) {
@@ -326,7 +298,7 @@ public class JogoDaVelha {
         return new int[0];
     }
 
-    //Bloco ofensivo basico
+    // Bloco ofensivo basico
     public int[] ataque(String simb) {
         int[] lacunaLin, lacunaCol, lacunaDiagonalP, lacunaDiagonalS, ataqueGarfoDiagonalP, ataqueGarfoDiagonalS = new int[2];
 
@@ -368,15 +340,14 @@ public class JogoDaVelha {
             posicoes[1] = 1;
             return posicoes;
         }
-        System.out.println(tabuleiroVazio);
-        if (tabuleiroVazio == 7 && tabuleiro[0][0].equals(simb) && tabuleiro[1][1].equals(simboloAdversario)) {
+        if (tabuleiroVazio == 7 && tabuleiro[0][0].equals(simb) && !tabuleiro[1][1].equals(simb)) {
             posicoes[0] = 3;
             posicoes[1] = 3;
             if (tabuleiro[posicoes[0] - 1][posicoes[1] - 1].equals(" ")) {
                 return posicoes;
             }
         }
-        if (tabuleiro[0][0].equals(simboloAdversario) && tabuleiro[1][1].equals(simb) && tabuleiro[2][2].equals(simboloAdversario)) {
+        if (tabuleiroVazio == 7 && tabuleiro[0][0].equals(simboloAdversario) && tabuleiro[1][1].equals(simb) && !tabuleiro[2][2].equals(simb)) {
             if (tabuleiro[0][2].equals(simboloAdversario)) {
                 posicoes[0] = 3;
                 posicoes[1] = 1;
@@ -511,7 +482,6 @@ public class JogoDaVelha {
             }
             if (cont == 3) {
                 if (tabuleiro[posicoes[0] - 1][posicoes[1] - 1].equals(" ")) {
-                    System.out.println(Arrays.toString(posicoes));
                     return posicoes;
                 }
             }
@@ -535,15 +505,15 @@ public class JogoDaVelha {
             }
             if (cont == 3) {
                 if (tabuleiro[posicoes[0] - 1][posicoes[1] - 1].equals(" ")) {
-                    System.out.println(Arrays.toString(posicoes));
                     return posicoes;
                 }
             }
         }
         return new int[0];
     }
+// Bloco de CvC
 
-//Bloco de utilirios
+// Bloco de utilitarios
     public String retornaSimboloAdversario(String simb) {
         if (simb.equals("x")) {
             return "o";
@@ -574,6 +544,38 @@ public class JogoDaVelha {
         }else {
             return jogador();
         }
+    }
+
+    public String[] escolherSimbolo() {
+        String[] simbolos = {"x", "o"};
+        String[] simbJogadores = new String[2];
+        int nSimb;
+        Random random = new Random();
+
+        nSimb = random.nextInt(0, 2);
+        simbJogadores[0] = simbolos[nSimb];
+        if (simbJogadores[0].equals(simbolos[0])) {
+            simbJogadores[1] = simbolos[1];
+        }else {
+            simbJogadores[1] = simbolos[0];
+        }
+        return simbJogadores;
+    }
+
+    public String[] aleatorizarJogador(String pJogador, String sJogador) {
+        String[] jogadores = {pJogador, sJogador};
+        String[] jogadoresAleatorios = new String[2];
+        Random random = new Random();
+        int nJogador;
+
+        nJogador = random.nextInt(0, 2);
+        jogadoresAleatorios[0] = jogadores[nJogador];
+        if (jogadoresAleatorios[0].equals(jogadores[0])) {
+            jogadoresAleatorios[1] = jogadores[1];
+        }else {
+            jogadoresAleatorios[1] = jogadores[0];
+        }
+        return jogadoresAleatorios;
     }
 
 // Bloco de modo de jogo
@@ -613,7 +615,7 @@ public class JogoDaVelha {
                     saidaEntrada = entrada(saidaJogador[0], saidaJogador[1], simbJogadores[0]);
                     if (saidaEntrada == 0) {
                         saidaVitoria = vitorias(saidaJogador[0], saidaJogador[1], simbJogadores[0], jogadores[0]);
-                        if (saidaVitoria != "") {
+                        if (!saidaVitoria.equals("")) {
                             System.out.println(saidaVitoria);
                             return;
                         } else {
@@ -633,7 +635,7 @@ public class JogoDaVelha {
                     saidaEntrada = entrada(saidaJogador[0], saidaJogador[1], simbJogadores[1]);
                     if (saidaEntrada == 0) {
                         saidaVitoria = vitorias(saidaJogador[0], saidaJogador[1], simbJogadores[1], jogadores[1]);
-                        if (saidaVitoria != "") {
+                        if (!saidaVitoria.equals("")) {
                             System.out.println(saidaVitoria);
                             return;
                         }else {
