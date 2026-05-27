@@ -514,37 +514,6 @@ public class JogoDaVelha {
         return new int[0];
     }
 // Bloco de CvC
-    public void cliente() {
-        String simbolo;
-
-        try (Socket socket = new Socket("localhost", 12345);
-             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-             ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
-
-            String[][] matriz;
-            simbolo = (String) in.readObject();
-
-            while (true) {
-                matriz = (String[][]) in.readObject();
-                if (verificaTabuleiro() != 0) {
-                    preencherMatriz(matriz, simbolo);
-                    out.writeObject(matriz);
-                    out.flush();
-                } else {
-                    out.writeObject(null); // Sinaliza que terminou
-                    out.flush();
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void preencherMatriz(String[][] matriz, String valor) {
-        int[] posicoes = computador(valor);
-        matriz[posicoes[0] - 1][posicoes[1] - 1] = valor;
-    }
 
     public int[] extraiPosicao(String[][] tabuleiroAtual, String[][] tabuleiroRecebido) {
         int[] posicao =  new int[2];
@@ -612,18 +581,15 @@ public class JogoDaVelha {
 
         try (ServerSocket server = new ServerSocket(12345)) {
 
-            new Thread(() -> {
-                cliente();
-            }).start();
-
-            Socket computadorUm = server.accept();
             System.out.println("Aguardando Computador 1...");
+            Socket computadorUm = server.accept();
 
             ObjectInputStream entradaComputadorUm = new ObjectInputStream(computadorUm.getInputStream());
             ObjectOutputStream saidaComputadorUm = new ObjectOutputStream(computadorUm.getOutputStream());
             System.out.println("Computador 1 conectado.");
 
             System.out.println("Aguardando Computador 2...");
+
 
             Socket computadorDois = server.accept();
             ObjectInputStream entradaComputadorDois = new ObjectInputStream(computadorDois.getInputStream());
@@ -653,7 +619,11 @@ public class JogoDaVelha {
 
                     Object obj = entrada[0].readObject();
 
+
                     if (obj == null) {
+                        saida[0].writeObject(tabuleiro);
+                        saida[0].flush();
+
                         computadores[0].close();
                         break;
                     }
@@ -661,26 +631,57 @@ public class JogoDaVelha {
                     System.out.println("\nServidor recebeu de " + jogadoresAleatorios[0] + ":");
                     posicoes = extraiPosicao(tabuleiro, matriz);
 
-                    if (posicoes.length > 0) {
+                    if (posicoes[0] >= 1 && posicoes[0] <= 3 && posicoes[1] >= 1 && posicoes[1] <= 3) {
                     saidaEntrada = entrada(posicoes[0], posicoes[1], simbJogadores[0]);
                     if (saidaEntrada == 0) {
                         saidaVitoria = vitorias(posicoes[0], posicoes[1], simbJogadores[0], jogadoresAleatorios[0]);
                         if (!saidaVitoria.equals("")) {
+                            saida[0].reset();
+                            saida[0].writeObject(tabuleiro);
+                            saida[0].flush();
+
                             matrizErro[0][0] = "VITÓRIA";
                             matrizErro[1][0] = saidaVitoria;
+
                             saida[0].reset();
                             saida[0].writeObject(matrizErro);
                             saida[0].flush();
-                            return;
+
+                            saida[1].reset();
+                            saida[1].writeObject(tabuleiro);
+                            saida[1].flush();
+
+                            matrizErro[0][0] = "DERROTA";
+                            matrizErro[1][0] = "Você perdeu!";
+
+                            saida[1].reset();
+                            saida[1].writeObject(matrizErro);
+                            saida[1].flush();
+                            break;
                         } else {
                             if (empate().equals("Empate!")) {
+                                saida[0].reset();
+                                saida[0].writeObject(tabuleiro);
+                                saida[0].flush();
+
                                 matrizErro[0][0] = "EMPATE";
                                 matrizErro[1][0] = empate();
+
                                 saida[0].reset();
                                 saida[0].writeObject(matrizErro);
                                 saida[0].flush();
+
+                                saida[1].reset();
+                                saida[1].writeObject(tabuleiro);
+                                saida[1].flush();
+
+                                saida[1].reset();
+                                saida[1].writeObject(matrizErro);
+                                saida[1].flush();
+
                                 System.out.println(empate());
-                                return;
+                                computadores[0].close();
+                                break;
                             }
                         }
                     } else {
@@ -704,6 +705,9 @@ public class JogoDaVelha {
                     Object obj = entrada[1].readObject();
 
                     if (obj == null) {
+                        saida[1].writeObject(tabuleiro);
+                        saida[1].flush();
+
                         computadores[1].close();
                         break;
                     }
@@ -711,27 +715,57 @@ public class JogoDaVelha {
                     System.out.println("\nServidor recebeu de " + jogadoresAleatorios[1] + ":");
                     posicoes = extraiPosicao(tabuleiro, matriz);
 
-                    if (posicoes.length > 0) {
+                    if (posicoes[0] >= 0 && posicoes[0] <= 3 && posicoes[1] >= 0 && posicoes[1] <= 3) {
                         saidaEntrada = entrada(posicoes[0], posicoes[1], simbJogadores[1]);
                         if (saidaEntrada == 0) {
                             saidaVitoria = vitorias(posicoes[0], posicoes[1], simbJogadores[1], jogadoresAleatorios[1]);
                             if (!saidaVitoria.equals("")) {
+                                saida[1].reset();
+                                saida[1].writeObject(tabuleiro);
+                                saida[1].flush();
+
                                 matrizErro[0][0] = "VITÓRIA";
                                 matrizErro[1][0] = saidaVitoria;
+
                                 saida[1].reset();
                                 saida[1].writeObject(matrizErro);
                                 saida[1].flush();
-                                System.out.println(saidaVitoria);
-                                return;
+
+                                saida[0].reset();
+                                saida[0].writeObject(tabuleiro);
+                                saida[0].flush();
+
+                                matrizErro[0][0] = "DERROTA";
+                                matrizErro[1][0] =  "Você perdeu!";
+
+                                saida[0].reset();
+                                saida[0].writeObject(matrizErro);
+                                saida[0].flush();
+                                break;
                             } else {
                                 if (empate().equals("Empate!")) {
+                                    saida[1].reset();
+                                    saida[1].writeObject(tabuleiro);
+                                    saida[1].flush();
+
                                     matrizErro[0][0] = "EMPATE";
                                     matrizErro[1][0] = empate();
+
                                     saida[1].reset();
                                     saida[1].writeObject(matrizErro);
                                     saida[1].flush();
+
+                                    saida[0].reset();
+                                    saida[0].writeObject(tabuleiro);
+                                    saida[0].flush();
+
+                                    saida[0].reset();
+                                    saida[0].writeObject(matrizErro);
+                                    saida[0].flush();
+
                                     System.out.println(empate());
-                                    return;
+                                    computadores[1].close();
+                                    break;
                                 }
                             }
                         } else {
@@ -919,6 +953,8 @@ public class JogoDaVelha {
                 ██    ██ ▀███▀ ████▀ ▀███▀   ▀█████  ▀█▀  ▀█████\s
                 
                 """);
+
+
         criarServidor(nomeJogadorUm, nomeJogadorDois);
     }
 
@@ -946,31 +982,27 @@ public class JogoDaVelha {
 
             System.out.print("Escolha um modo de jogo: ");
             escolha = teclado.nextInt();
-            while (true) {
-                switch (escolha) {
-                    case 1:
-                        pvp("Jogador 1", "Jogador 2", false);
-                        break;
-                    case 2:
-                        pvc();
-                        break;
-                    case 3:
-                        cvc("AI 1", "AI 2");
-                        break;
-                    case 4:
-                        break;
-                }
-                if (escolha == 4) {
-                    System.exit(0);
-                } else {
-                    tabuleiro = new String[][] {{" "," ", " "}, {" "," ", " "},{" "," ", " "}};
-                }
-                System.out.print("Deseja continuar? (S/N): ");
-                continuar = teclado.next();
-                    if (continuar.equalsIgnoreCase("n")) {
-                        break;
-                    }
+
+            if (escolha == 4) {
+                System.exit(0);
+            }
+            switch (escolha) {
+                case 1:
+                    pvp("Jogador 1", "Jogador 2", false);
+                    break;
+                case 2:
+                    pvc();
+                    break;
+                case 3:
+                    cvc("AI 1", "AI 2");
+                    break;
+            }
+            System.out.print("\nDeseja continuar? (S/N): ");
+            continuar = teclado.next();
+            if (continuar.equalsIgnoreCase("n")) {
+                break;
+            }
+            tabuleiro = new String[][] {{" "," ", " "}, {" "," ", " "},{" "," ", " "}};
             }
         }
-    }
 }
