@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class ClienteExterno {
     static String[][] tabuleiro;
-
+    
     public static void main(String[] args) {
         String simbolo;
         Scanner teclado = new Scanner(System.in);
@@ -26,11 +26,12 @@ public class ClienteExterno {
             while (true) {
                 
                 tabuleiro = (String[][]) in.readObject();
-          
+                
                 if (tabuleiro.length == 3) {
                     System.out.println("\nRecebido do servidor: ");
                     imprimeTabuleiro(tabuleiro);
                 }
+
                 if (tabuleiro.length == 2) {
                     System.out.println(tabuleiro[1][0]);
                     out.writeObject(null);

@@ -410,7 +410,7 @@ public class JogoDaVelha {
 
     // Bloco de defesa basica
     public int[] defesa(String simb) {
-        int[] lacunaLin, lacunaCol, lacunaDiagonalP, lacunaDiagonalS, marcacaoInicial,lacunaGarfoDiagonaloP, lacunaGarfoDiagonaloS, lacunaGarfoLinCol, posicaoFinal = new int[2];
+        int[] lacunaLin, lacunaCol, lacunaDiagonalP, lacunaDiagonalS, marcacaoInicial,lacunaGarfoDiagonaloP, lacunaGarfoDiagonaloS, lacunaGarfoLinCol, posicaoFinal, lacunaGarfoCantos = new int[2];
         String simbAdversario = retornaSimboloAdversario(simb);
 
         lacunaLin = lacunaLinha(simbAdversario);
@@ -420,6 +420,7 @@ public class JogoDaVelha {
         lacunaGarfoDiagonaloP = lacunaGarfoDiagonaloPrincipal(simb);
         lacunaGarfoDiagonaloS = lacunaGarfoDiagonaloSecundaria(simb);
         lacunaGarfoLinCol = lacunaGarfoLinhaColuna(simb);
+        lacunaGarfoCantos = lacunaGarfoCantos(simb);
         marcacaoInicial = marcacaoInicial();
         posicaoFinal = posicoesFinais();
 
@@ -443,6 +444,9 @@ public class JogoDaVelha {
         }
         if (lacunaGarfoLinCol.length != 0) {
             return lacunaGarfoLinCol;
+        }
+        if (lacunaGarfoCantos.length != 0) {
+            return lacunaGarfoCantos;
         }
         if (marcacaoInicial.length != 0) {
             return marcacaoInicial;
@@ -513,6 +517,24 @@ public class JogoDaVelha {
         }
         return new int[0];
     }
+
+    public int[] lacunaGarfoCantos(String simb) {
+        String simbAdversario = retornaSimboloAdversario(simb);
+        int[] posicoes = new int[2];
+
+        if (verificaTabuleiro() == 6 && tabuleiro[1][2].equals(simbAdversario) && tabuleiro[2][1].equals(simbAdversario) && tabuleiro[1][1].equals(simb)) {
+            posicoes[0] = 3;
+            posicoes[1] = 3;
+            return posicoes;
+        }
+        if (verificaTabuleiro() == 6 && tabuleiro[2][1].equals(simbAdversario) && tabuleiro[1][2].equals(simbAdversario) && tabuleiro[1][1].equals(simb)) {
+            posicoes[0] = 3;
+            posicoes[1] = 3;
+            return posicoes;
+        }
+        return  new int[0];
+    }
+
 // Bloco de CvC
 
     public int[] extraiPosicao(String[][] tabuleiroAtual, String[][] tabuleiroRecebido) {
@@ -953,9 +975,7 @@ public class JogoDaVelha {
                 ██    ██ ▀███▀ ████▀ ▀███▀   ▀█████  ▀█▀  ▀█████\s
                 
                 """);
-
-
-        criarServidor(nomeJogadorUm, nomeJogadorDois);
+            criarServidor(nomeJogadorUm, nomeJogadorDois);
     }
 
 //Bloco principal

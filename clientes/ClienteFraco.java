@@ -122,11 +122,14 @@ public class ClienteFraco {
     }
 
      public static void imprimeTabuleiro(String[][] matriz) {
-        System.out.println("    1   2   3");
-        for (int i = 0; i < 3; i++) {
-            System.out.println((i+1)+"   "+tabuleiro[i][0]+" | "+tabuleiro[i][1]+" | "+tabuleiro[i][2]);
-            if (i<2) System.out.println("  ---|---|---");
-        }
-        System.out.println();
+        System.out.println(String.format("""
+                    1   2    3                
+                1   %s | %s | %s 
+                  ----|---|----
+                2   %s | %s | %s 
+                  ----|---|----
+                3   %s | %s | %s   
+                """, tabuleiro[0][0], tabuleiro[0][1], tabuleiro[0][2], tabuleiro[1][0], tabuleiro[1][1], tabuleiro[1][2], tabuleiro[2][0], tabuleiro[2][1], tabuleiro[2][2]));
     }
+
 }
